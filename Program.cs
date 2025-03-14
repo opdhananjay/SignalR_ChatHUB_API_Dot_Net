@@ -1,4 +1,5 @@
 using TC.Chat;
+using TC.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<IDictionary<string, UserConnection>>(new Dictionary<string,UserConnection>());
+
 builder.Services.AddSignalR();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder
+            .WithOrigins("http://localhost:4200", "http://192.168.0.105:4200") // Allow your frontend IP
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
+
 
 var app = builder.Build();
 
@@ -23,6 +37,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.UseEndpoints(endpoints =>
 {

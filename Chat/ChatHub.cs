@@ -18,12 +18,14 @@ namespace TC.Chat
             try
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room);
-                await Clients.All.SendAsync("ReceiveMessage", userConnection.Room, $"{userConnection.User} has joined Room");
+                await Clients.All.SendAsync("ReceiveMessage", "Lets Program Bot", $"{userConnection.User} has joined Room", DateTime.Now);
+                _connections[Context.ConnectionId] = userConnection;
                 foreach (var connection in _connections.Values)
                 {
                     Console.WriteLine("Connection ID:" + connection);
+                    
                 }
-                await SendConnectedUser(userConnection.Room!);
+                await SendConnectedUser(userConnection.Room!); 
             }
             catch (Exception ex)
             {
@@ -59,7 +61,7 @@ namespace TC.Chat
                 return base.OnDisconnectedAsync(exception);
             }
  
-            Clients.Group(userConnection.Room).SendAsync(method: "ReceiveMessage", arg1: "Lets Disconnect Bot", arg2: $"{userConnection.User} has Left the Group");
+            Clients.Group(userConnection.Room).SendAsync(method: "ReceiveMessage", arg1: "Lets Disconnect Bot", arg2: $"{userConnection.User} has Left the Group", DateTime.Now);
             SendConnectedUser(userConnection.Room!);
             return base.OnDisconnectedAsync(exception);
         }
